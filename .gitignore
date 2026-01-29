@@ -1,0 +1,11 @@
+/HW01/task6.exe
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+/deployment.xml
+/editor.xml
+/HW01.iml
+/misc.xml
+/modules.xml
+/vcs.xml

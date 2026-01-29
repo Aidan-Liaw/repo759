@@ -1,0 +1,56 @@
+ECE 759 HW01 - Aidan Liaw - akliaw - 9089292669 - Solo Team
+
+1. I went through the a) through c) and understand how to 
+	- time code (but can I please use the RDTSC on x86 CPU programs because "cycle accuracy is cool"? I don't know how to do cycle accurate timing benchmarks on GPUs...),
+	- how to submit my assignments with git, and,
+	- what the recommended workflow is when it comes to working on my assignment (something something, code on my PC, write a Slurm scripts, test on Euler, repeat until successful, something something).
+
+2.
+
+a: cd somedir
+
+b: cat sometext.txt
+
+c: tail -n 5 sometext.txt 
+
+d: tail -n 5 *.txt
+
+e: for idx in {1..6}; do echo $idx; done
+
+3.
+
+a: On my first login to Euler, I got "No modules loaded", so no there are no modules loaded.
+
+b: Running "gcc -v" returns "gcc version 14.3.1 20250617 (Red Hat 14.3.1-2) (GCC)" on the last line. Therefore, Euler is currently running GCC version 14.3.1 without loading any modules.
+
+c: Running "module avail cuda" for all available modules (different to all possible modules, which uses the spider subcommand) returns:
+	- nvidia/cuda/10.2.2
+	- nvidia/cuda/11.0.3
+	- nvidia/cuda/11.3.1
+	- nvidia/cuda/11.6.0
+	- nvidia/cuda/11.8.0
+	- nvidia/cuda/12.0.0
+	- nvidia/cuda/12.1.0
+	- nvidia/cuda/12.2.0
+	- nvidia/cuda/12.5.0
+	- nvidia/cuda/12.9.1
+	- nvidia/cuda/13.0.0
+	- nvidia/nvhpc-hpcx-cuda11/24.5
+	- nvidia/nvhpc-hpcx-cuda12/23.11
+	- nvidia/nvhpc-hpcx-cuda12/24.5
+
+d: Another piece of software available on Euler is cmake, which is a "meta" build system, as it generates build files for a build tool like Makefiles, Ninja, etcetera, which increases project portability across platforms and build tools.
+
+4. Please see task4.sh
+
+5.
+
+a: TODO
+
+b: SLURM_JOB_ID is a global environment variable set when a Slurm job begins execution, which can be read for tasks like ID'ing job runs.
+
+c:
+
+6. Please see task6.cpp
+
+7. I filled out the survey. This took way too long...
