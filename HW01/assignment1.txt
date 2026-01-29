@@ -45,11 +45,17 @@ d: Another piece of software available on Euler is cmake, which is a "meta" buil
 
 5.
 
-a: TODO
+a: As tested by having the "pwd" command run within Slurm scripts across different directories, a Slurm job on Euler begins executing in the directory that the Slurm script is run from.
 
-b: SLURM_JOB_ID is a global environment variable set when a Slurm job begins execution, which can be read for tasks like ID'ing job runs.
+b: SLURM_JOB_ID is a global environment variable set when a Slurm job begins execution, which can be read for tasks like ID'ing job runs. REF: https://slurm.schedmd.com/sbatch.html
 
-c:
+c: To track the status of a job run by myself (assuming the job is still in the queue), one should use sacct, and then check the STATE column. REF: https://slurm.schedmd.com/sacct.html
+
+d: To cancel a job submitted by oneself, first find the JobID under the JobID column, and then run scancel [JobID]. REF: https://slurm.schedmd.com/scancel.html
+
+e: The --gres option allows for a "comma-delimited list" of usable resources by a job to be described. If the list is "gpu:1", this means that 1 GPU is available. The specific GPU however is undefined, as the type is not provided (for example, from the Slurm website, "gpu:kepler:2" ensures that two GPUs of Nvidia's Kepler series will be usuable to the job). REF: https://slurm.schedmd.com/sbatch.html
+
+f: The --array option allows for an array of jobs, meaning "multiple jobs [will be] executed with identical parameters". REF: https://slurm.schedmd.com/sbatch.html
 
 6. Please see task6.cpp
 
