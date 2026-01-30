@@ -8,8 +8,7 @@ int main(int argc, char *argv[]) {
     printf("%d\n", N);
 
     for (int idx = N; idx > 0; idx--) {
-        std:
-            std::cout << idx << ' ';
+        std::cout << idx << ' ';
     }
     std::cout << '0' << std::endl;
 }

@@ -7,6 +7,18 @@ ECE 759 HW01 - Aidan Liaw - akliaw - 9089292669 - Solo Team
 
 2.
 
+Acknowledgement: ChatGPT was given the following prompt:
+
+"
+[Questions]
+
+[Answers]
+
+Do you agree with my answers?
+"
+
+and fixed Q2e.
+
 a: cd somedir
 
 b: cat sometext.txt
@@ -15,7 +27,7 @@ c: tail -n 5 sometext.txt
 
 d: tail -n 5 *.txt
 
-e: for idx in {1..6}; do echo $idx; done
+e: for idx in {0..6}; do echo $idx; done
 
 3.
 
@@ -43,7 +55,35 @@ d: Another piece of software available on Euler is cmake, which is a "meta" buil
 
 4. Please see task4.sh
 
+Acknowledgement: ChatGPT was given the following prompt:
+
+"
+[Questions]
+
+[Answers]
+
+Do you agree with my answers?
+"
+
+It agreed.
+
 5.
+
+Acknowledgement: ChatGPT was given the following prompt:
+
+"
+[Questions]
+
+[Answers]
+
+Do you agree with my answers?
+"
+
+It did not agree. It says that squeue -u $USER should be suggested for Q5c. I disagree, since I tested sacct, and felt that it was better for testing things like whether a task is pending. When using squeue, the time remains at 00:00, which unless you check twice would imply that the job has just started, whereas sacct shows explicitly that the job is pending. Furthermore, sacct says whether a job is running as well.
+
+It also reminded me that --gres is for requesting resources, not listing them.
+
+It also also reminded me to talk about $SLURM_ARRAY_TASK_ID for the optional question.
 
 a: As tested by having the "pwd" command run within Slurm scripts across different directories, a Slurm job on Euler begins executing in the directory that the Slurm script is run from.
 
@@ -53,9 +93,9 @@ c: To track the status of a job run by myself (assuming the job is still in the 
 
 d: To cancel a job submitted by oneself, first find the JobID under the JobID column, and then run scancel [JobID]. REF: https://slurm.schedmd.com/scancel.html
 
-e: The --gres option allows for a "comma-delimited list" of usable resources by a job to be described. If the list is "gpu:1", this means that 1 GPU is available. The specific GPU however is undefined, as the type is not provided (for example, from the Slurm website, "gpu:kepler:2" ensures that two GPUs of Nvidia's Kepler series will be usuable to the job). REF: https://slurm.schedmd.com/sbatch.html
+e: The --gres option allows for a "comma-delimited list" of resources to be allocated to a job. If the list is "gpu:1", this means that 1 GPU is requested. The specific GPU however is undefined, as the type is not provided (for example, from the Slurm website, "gpu:kepler:2" ensures that two GPUs of Nvidia's Kepler series will be usuable to the job). REF: https://slurm.schedmd.com/sbatch.html
 
-f: The --array option allows for an array of jobs, meaning "multiple jobs [will be] executed with identical parameters". REF: https://slurm.schedmd.com/sbatch.html
+f: The --array option allows for an array of jobs, meaning "multiple jobs [will be] executed with identical parameters". One may use the variable $SLURM_ARRAY_TASK_ID to figure out the ID of the job. REF: https://slurm.schedmd.com/sbatch.html
 
 6. Please see task6.cpp
 
