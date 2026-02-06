@@ -1,0 +1,15 @@
+Author: Aidan Liaw
+
+Please see my code for Problems 1a down to Problem 3e.
+
+Problem 3f:
+
+REF: https://stackoverflow.com/questions/381621/using-arrays-or-stdvectors-in-c-whats-the-performance-gap/43955169#43955169
+REF: https://www.matecdev.com/posts/cpp-vector-array-performance.html#conclusion
+
+The differences between the times for mmul1, mmul2 and mmul3 come down to how they exploit (or don't exploit) C's row-major ordering for 3D arrays and a CPU cache's spatial locality, which can be argued via their stride (the jumps in memory address distance between sequentially accessed elements) to justify the performance of these functions. While all of these functions use the same "C[i * n + j] += A[i * n + k] * B[k * n + j];" statement:
+- mmul2 minimises stride for all three arrays by incrementing j first (minimising for B and C, while A is unaffected as it does not use j), followed by k next (minimising for A, unaffecting C, but slightly negatively affecting B as while it forces a longer stride, it is updated periodically), and finally i (unaffectig B, but slightly negativeluy affecting A nd C as while it forces a longer stride, it is updated even less periodically), hence its fastest performance
+- mmul1 does slightly worse as varying k first negatively impacts A (as it changes constantly since k is the innermost loop) but minimises stride for B and not impacting C, but is otherwise similar to mmul2, hence its middling performance, but
+- mmul3 does the worst as its inner loops maximise the stride as often as possible, whereas its outermost loop has the smallest impact on stride
+
+Additionally, mmul1 and mmul4 appear extremely close in terms of performance (and in other runs have been identical). This is because while std::vector is in theory effectively a wrapper over C's dynamic/malloc'd arrays, it does incur an initialisation cost that raw malloc'd arrays do not. In fact, decompiled C++ code has shown that std::vector operations often compile down to the same assembly as operations on raw malloc'd arrays would (meaning identical performance when substitued with one or the other). This aligns with other observations by other people.

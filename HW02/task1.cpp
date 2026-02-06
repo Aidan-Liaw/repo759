@@ -7,6 +7,11 @@
 // REF: https://learn.microsoft.com/en-us/cpp
 // /standard-library/uniform-real-distribution-class?view=msvc-170
 
+// ACKNOWLEDGEMENT: The problem was solved by me 80% and ChatGPT 20%
+// The AI model was asked to check for bugs, and found out that some variables
+// were improperly defined with wrong sizes, which fixed a bug with n = 2^30
+// inputs failing.
+
 #include <random>
 #include <string>
 #include <chrono>
@@ -15,9 +20,9 @@
 #include "scan.h"
 
 int main(int argc, char const *argv[]) {
-    int N = std::stoi(argv[1]);
-    float *randoms = new float[N];
-    float *output = new float[N];
+    std::size_t N = std::stoull(argv[1]);
+    auto *randoms = new float[N];
+    auto *output = new float[N];
 
     std::random_device rng_device;
     std::mt19937 generator(rng_device());
@@ -26,7 +31,7 @@ int main(int argc, char const *argv[]) {
     // Since uniform_real_distribution is considered inclusive-exclusive
     std::uniform_real_distribution<float> distr(-1,std::numeric_limits<float>::epsilon() + 1);
 
-    for (int idx = 0; idx < N; ++idx) {
+    for (std::size_t idx = 0; idx < N; ++idx) {
         randoms[idx] = distr(generator);
     }
 
@@ -39,7 +44,10 @@ int main(int argc, char const *argv[]) {
 
     std::chrono::duration<double, std::milli> duration_sec = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(end - start);
 
-    printf("%.2f\n%.2f\n%.2f\n", output[0], output[N-1], duration_sec.count());
+    printf("%f\n%f\n%f\n", duration_sec.count(), output[0], output[N-1]);
+
+    delete [] randoms;
+    delete [] output;
 
     return 0;
 }
