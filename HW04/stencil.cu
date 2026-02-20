@@ -6,7 +6,7 @@
 
 #include "stencil.cuh"
 
-__global__ void stencil_kernel(const float* image, const float* mask, float* output, unsigned int n, unsigned int R) {
+__global__ void stencil_kernel(const float *image, const float *mask, float *output, unsigned int n, unsigned int R) {
     int64_t thread_idx = (int64_t) blockIdx.x * (int64_t) blockDim.x + (int64_t) threadIdx.x;
     int64_t block_offset = (int64_t) blockIdx.x * (int64_t) blockDim.x - (int64_t) R;
 
@@ -34,8 +34,9 @@ __global__ void stencil_kernel(const float* image, const float* mask, float* out
 
     *(sOutput + threadIdx.x) = 0;
     for (int64_t j = -((int64_t) R); j <= R; ++j) {
-        float image_element = thread_idx  + j < 0 || thread_idx  + j >= n
-                                ? 1 : *(sImage + threadIdx.x + j + R);
+        float image_element = thread_idx + j < 0 || thread_idx + j >= n
+                                  ? 1
+                                  : *(sImage + threadIdx.x + j + R);
         *(sOutput + threadIdx.x) += image_element * *(sMask + j + R);
     }
 
@@ -44,9 +45,9 @@ __global__ void stencil_kernel(const float* image, const float* mask, float* out
 
 
 // threads_per_block >= 2 * R + 1
-__host__ void stencil(const float* image,
-                      const float* mask,
-                      float* output,
+__host__ void stencil(const float *image,
+                      const float *mask,
+                      float *output,
                       unsigned int n,
                       unsigned int R,
                       unsigned int threads_per_block) {

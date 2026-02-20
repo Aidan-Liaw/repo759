@@ -25,67 +25,67 @@
 // /standard-library/uniform-real-distribution-class?view=msvc-170
 
 int main(int argc, char *argv[]) {
-  int array_length = std::stoi(argv[1]);
-  int threads_per_block = std::stoi(argv[2]);
+    int array_length = std::stoi(argv[1]);
+    int threads_per_block = std::stoi(argv[2]);
 
-  float hA[array_length * array_length], hB[array_length * array_length], hC[array_length * array_length];
+    float hA[array_length * array_length], hB[array_length * array_length], hC[array_length * array_length];
 
-  std::random_device rng_device;
-  std::mt19937 generator(rng_device());
-  // std::numeric_limits<float>::epsilon() is the FP epsilon
-  // Which is added to ensure that 1 is included in the distribution
-  // Since uniform_real_distribution is considered inclusive-exclusive
-  std::uniform_real_distribution<float> distr(-1,1 + std::numeric_limits<float>::epsilon());
+    std::random_device rng_device;
+    std::mt19937 generator(rng_device());
+    // std::numeric_limits<float>::epsilon() is the FP epsilon
+    // Which is added to ensure that 1 is included in the distribution
+    // Since uniform_real_distribution is considered inclusive-exclusive
+    std::uniform_real_distribution<float> distr(-1, 1 + std::numeric_limits<float>::epsilon());
 
-  for (int idx = 0; idx < array_length * array_length; ++idx) {
-    hA[idx] = distr(generator);
-    hB[idx] = distr(generator);
-  }
+    for (int idx = 0; idx < array_length * array_length; ++idx) {
+        hA[idx] = distr(generator);
+        hB[idx] = distr(generator);
+    }
 
 
-  float *dA, *dB, *dC;
+    float *dA, *dB, *dC;
 
-  cudaMalloc((void**)&dA, sizeof(float) * array_length * array_length);
-  cudaMalloc((void**)&dB, sizeof(float) * array_length * array_length);
-  cudaMalloc((void**)&dC, sizeof(float) * array_length * array_length);
+    cudaMalloc((void **) &dA, sizeof(float) * array_length * array_length);
+    cudaMalloc((void **) &dB, sizeof(float) * array_length * array_length);
+    cudaMalloc((void **) &dC, sizeof(float) * array_length * array_length);
 
-  cudaMemcpy(dA, hA, sizeof(float) * array_length * array_length, cudaMemcpyHostToDevice);
-  cudaMemcpy(dB, hB, sizeof(float) * array_length * array_length, cudaMemcpyHostToDevice);
+    cudaMemcpy(dA, hA, sizeof(float) * array_length * array_length, cudaMemcpyHostToDevice);
+    cudaMemcpy(dB, hB, sizeof(float) * array_length * array_length, cudaMemcpyHostToDevice);
 
 #if PERF_TEST == 1
-  cudaEvent_t start;
-  cudaEvent_t stop;
-  cudaEventCreate(&start);
-  cudaEventCreate(&stop);
+    cudaEvent_t start;
+    cudaEvent_t stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-  cudaEventRecord(start);
+    cudaEventRecord(start);
 #else
   cudaDeviceSynchronize();
 #endif
 
-  matmul(dA, dB, dC, array_length, threads_per_block);
+    matmul(dA, dB, dC, array_length, threads_per_block);
 
 #if PERF_TEST == 1
-  cudaEventRecord(stop);
-  cudaEventSynchronize(stop);
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
 
-  // Get the elapsed time in milliseconds
-  float ms;
-  cudaEventElapsedTime(&ms, start, stop);
+    // Get the elapsed time in milliseconds
+    float ms;
+    cudaEventElapsedTime(&ms, start, stop);
 #else
   cudaDeviceSynchronize();
 #endif
 
-  cudaMemcpy(hC, dC, sizeof(float) * array_length * array_length, cudaMemcpyDeviceToHost);
+    cudaMemcpy(hC, dC, sizeof(float) * array_length * array_length, cudaMemcpyDeviceToHost);
 
 #if PERF_TEST == 1
-  std::cout << ms << std::endl;
-  std::cout << hC[array_length * array_length - 1] << std::endl;
+    std::cout << ms << std::endl;
+    std::cout << hC[array_length * array_length - 1] << std::endl;
 #endif
 
-  cudaFree(dA);
-  cudaFree(dB);
-  cudaFree(dC);
+    cudaFree(dA);
+    cudaFree(dB);
+    cudaFree(dC);
 
-  return 0;
+    return 0;
 }

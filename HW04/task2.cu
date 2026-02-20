@@ -84,12 +84,12 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(gMask, mask, sizeof(mask), cudaMemcpyHostToDevice);
 
 #if PERF_TEST == 1
-  cudaEvent_t start;
-  cudaEvent_t stop;
-  cudaEventCreate(&start);
-  cudaEventCreate(&stop);
+    cudaEvent_t start;
+    cudaEvent_t stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
 
-  cudaEventRecord(start);
+    cudaEventRecord(start);
 #else
     cudaDeviceSynchronize();
 #endif
@@ -97,12 +97,12 @@ int main(int argc, char *argv[]) {
     stencil(gImage, gMask, gOutput, image_length, R, threads_per_block);
 
 #if PERF_TEST == 1
-  cudaEventRecord(stop);
-  cudaEventSynchronize(stop);
+    cudaEventRecord(stop);
+    cudaEventSynchronize(stop);
 
-  // Get the elapsed time in milliseconds
-  float ms;
-  cudaEventElapsedTime(&ms, start, stop);
+    // Get the elapsed time in milliseconds
+    float ms;
+    cudaEventElapsedTime(&ms, start, stop);
 #else
     cudaDeviceSynchronize();
 #endif
@@ -110,8 +110,8 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(output, gOutput, sizeof(output), cudaMemcpyDeviceToHost);
 
 #if PERF_TEST == 1
-  std::cout << ms << std::endl;
-  std::cout << output[image_length - 1] << std::endl;
+    std::cout << ms << std::endl;
+    std::cout << output[image_length - 1] << std::endl;
 #endif
 
     cudaFree(gImage);

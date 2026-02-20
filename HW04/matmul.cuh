@@ -13,11 +13,11 @@
 //
 // Assumptions:
 // - 1D kernel configuration
-__global__ void matmul_kernel(const float* A, const float* B, float* C, size_t n);
+__global__ void matmul_kernel(const float *A, const float *B, float *C, size_t n);
 
 // Makes one call to matmul_kernel with threads_per_block threads per block.
 // You can consider following the kernel call with cudaDeviceSynchronize (but if you use
 // cudaEventSynchronize to time it, that call serves the same purpose as cudaDeviceSynchronize).
-void matmul(const float* A, const float* B, float* C, size_t n, unsigned int threads_per_block);
+void matmul(const float *A, const float *B, float *C, size_t n, unsigned int threads_per_block);
 
 #endif

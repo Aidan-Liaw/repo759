@@ -10,7 +10,7 @@
 
 // Please see task1.cu for comments on AI usage.
 
-__global__ void matmul_kernel(const float* A, const float* B, float* C, size_t n) {
+__global__ void matmul_kernel(const float *A, const float *B, float *C, size_t n) {
     size_t thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (thread_idx >= n * n) {
@@ -30,7 +30,7 @@ __global__ void matmul_kernel(const float* A, const float* B, float* C, size_t n
     }
 }
 
-void matmul(const float* A, const float* B, float* C, size_t n, unsigned int threads_per_block) {
+void matmul(const float *A, const float *B, float *C, size_t n, unsigned int threads_per_block) {
     size_t number_of_blocks = (n * n + threads_per_block - 1) / threads_per_block;
 
     matmul_kernel<<<number_of_blocks, threads_per_block>>>(A, B, C, n);
