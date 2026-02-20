@@ -16,6 +16,9 @@
 // As a result, most of the code (except the for loop, array indexing
 // and the thread_idx which I took off the slides) is ChatGPT's
 
+// The only "bug" I found was that my device memory allocation was in the wrong place. It should be
+// done here, not in the matmul.cu file's functions.
+
 // Note that the plot for this task looks stupid. Very stupid, but multiple runs provide the same result.
 // I cannot find the bug in my code that causes this. Apologies.
 

@@ -53,6 +53,13 @@ __host__ void stencil(const float *image,
                       unsigned int threads_per_block) {
     size_t number_of_blocks = (n + threads_per_block - 1) / threads_per_block;
 
+    // Accounts for sImage, sMask, and sOutput
+    // threads_per_block accounts for how each thread needs its own output space,
+    // and how sImage needs to be threads_per_block larger so that different thread indexes can access
+    // the required elements of the image array.
+    // Since memory is shared, there is significant overlap between used image data,
+    // and so threads_per_block alongside the offset in the kernel function ensures that the lowest and highest
+    // index threads cam still access everything it nees.
     size_t shared_memory_size = ((2 * R + threads_per_block) + (2 * R + 1) + threads_per_block) * sizeof(float);
 
     stencil_kernel<<<number_of_blocks, threads_per_block, shared_memory_size>>>(image, mask, output, n, R);
