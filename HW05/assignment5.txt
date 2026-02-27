@@ -1,0 +1,10 @@
+Assignment 5
+Aidan Liaw (akliaw)
+
+1b: Did not attempt.
+
+1e: Yes, as it impacts both memory usage, but also what functional units are used by the GPU, which may impact performance (INT32 versus FP32 versus FP64) and even scheduling (as modern SMs can execute both INT and FP operations together).
+
+1f: Did not attempt, but if I had to guess, the GPU would be the better implementation as the GPU is able to proces more data simultaneously via its multiple SMs. In this specific implementation, the number of reads is reduced and the use of shared memory allows for caching among more processors compared to the number of cores in a CPU and the amount of shared memory that they can use.
+
+2b: Did not attempt.
