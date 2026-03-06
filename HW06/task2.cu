@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
     cudaDeviceSynchronize();
 
     std::cout << ms  << std::endl;
+    std::cout << mOutput[array_length - 1] << std::endl;
 
     cudaFree(mInput);
     cudaFree(mOutput);
