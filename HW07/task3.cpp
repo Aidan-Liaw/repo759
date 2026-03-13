@@ -5,6 +5,12 @@
 #include <iostream>
 #include <omp.h>
 
+// ACKNOWLEDGEMENT: 95% of the work is my own, and 5% of the work is ChatGPT's,
+// For this task, I asked ChatGPT "Is my code correct?" and provided it with my code.
+// It picked up that I had used a wrong variable somewhere. There were some syntax errors,
+// but that amounts to me leaving the task mid-way, and forgetting to add an end bracket at the end.
+// Otherwise, it was satisfied with my code.
+
 int main(int argc, char* argv[]) {
     omp_set_num_threads(4);
 

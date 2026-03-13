@@ -7,6 +7,15 @@
 #include <thrust/sort.h>
 #include <thrust/device_vector.h>
 
+// ACKNOWLEDGEMENT: 70% of the work is my own, and 20% of the work is ChatGPT's,
+// and 10% of the work is Nvidia's article on Thrust as they used an RLE (Run-Length Encoding) example,
+// which is basically this task.
+// For this task, I asked ChatGPT "Is my code correct?" and provided it with my code.
+// It picked up that I was trying to modify a constant vector
+// (even though to my eyes it looks like a constant pointer...),
+// and warned that I needed to resize the values and counts vectors like Nvidia's article does.
+// Otherwise, it was satisfied with my code.
+
 void count(const thrust::device_vector<int>& d_in,
                  thrust::device_vector<int>& values,
                  thrust::device_vector<int>& counts) {

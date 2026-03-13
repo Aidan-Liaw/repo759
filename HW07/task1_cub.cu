@@ -8,7 +8,11 @@
 
 #include <cub/util_allocator.cuh>
 #include <cub/device/device_reduce.cuh>
-#include "cub/util_debug.cuh"
+
+// ACKNOWLEDGEMENT: 5% of the work is my own, 5% of the work is ChatGPT's, and 90% of the work is Professor Dan Negrut's.
+// For this task, I asked ChatGPT "Is my code correct?" and provided it with my code.
+// It picked up slip-ups in types used, and also spotted I forgot to change num_items to array_length somewhere.
+// Otherwise, it was satisfied with my code.
 
 using namespace cub;
 CachingDeviceAllocator  g_allocator(true);  // Caching allocator for device memory
