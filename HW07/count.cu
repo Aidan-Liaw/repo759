@@ -11,8 +11,13 @@ void count(const thrust::device_vector<int>& d_in,
                  thrust::device_vector<int>& values,
                  thrust::device_vector<int>& counts) {
 
-    thrust::sort(d_in.begin(), d_in.end());
+    thrust::device_vector<int> d_Sorted = d_in;
 
-    thrust::reduce_by_key(d_in.begin(), d_in.end(), thrust::constant_iterator<int>(1),
-        values.begin(), counts.begin());
+    thrust::sort(d_Sorted.begin(), d_Sorted.end());
+
+    size_t run_size = thrust::reduce_by_key(d_Sorted.begin(), d_Sorted.end(), thrust::constant_iterator<int>(1),
+        values.begin(), counts.begin()).first - values.begin();
+
+    values.resize(run_size);
+    counts.resize(run_size);
 }

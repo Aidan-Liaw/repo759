@@ -11,20 +11,20 @@
 #include <thrust/device_vector.h>
 #include <thrust/reduce.h>
 
-
+#include "count.cuh"
 
 
 int main(int argc, char* argv[]) {
     int array_length = std::stoi(argv[1]);
 
-    thrust::host_vector<float> hV(array_length);
+    thrust::host_vector<int> hV(array_length);
 
     std::random_device rng_device;
     std::mt19937 generator(rng_device());
     // std::numeric_limits<float>::epsilon() is the FP epsilon
     // Which is added to ensure that 1 is included in the distribution
     // Since uniform_real_distribution is considered inclusive-exclusive
-    std::uniform_real_distribution<float> distr(-1, 1 + std::numeric_limits<float>::epsilon());
+    std::uniform_int_distribution<int> distr(0, 501);
 
     for (size_t idx = 0; idx < array_length; ++idx) {
         hV[idx] = distr(generator);
@@ -32,7 +32,9 @@ int main(int argc, char* argv[]) {
 
     // Technically speaking, the = sign is a built-in Thrust function
     // See its operator overload...
-    thrust::device_vector<float> dV = hV;
+    thrust::device_vector<int> dV = hV;
+    thrust::device_vector<int> dValues(array_length);
+    thrust::device_vector<int> dCount(array_length);
 
     float ms;
 
@@ -44,7 +46,7 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start);
     cudaDeviceSynchronize();
 
-    float sum = thrust::reduce(dV.begin(), dV.end(), 0.0f, thrust::plus<float>());
+    count(dV, dValues, dCount);
 
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
@@ -53,7 +55,8 @@ int main(int argc, char* argv[]) {
     cudaEventElapsedTime(&ms, start, stop);
     cudaDeviceSynchronize();
 
-    std::cout << sum << std::endl;
+    std::cout << dValues.back() << std::endl;
+    std::cout << dCount.back() << std::endl;
     std::cout << ms  << std::endl;
 
     return 0;

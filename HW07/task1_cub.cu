@@ -6,10 +6,10 @@
 #include <random>
 #include <string>
 
-#include <stdio.h>
 #include <cub/util_allocator.cuh>
 #include <cub/device/device_reduce.cuh>
 #include "cub/util_debug.cuh"
+
 using namespace cub;
 CachingDeviceAllocator  g_allocator(true);  // Caching allocator for device memory
 
@@ -30,16 +30,16 @@ int main(int argc, char* argv[]) {
     }
 
     float* d_in = NULL;
-    CubDebugExit(g_allocator.DeviceAllocate((void**)& d_in, sizeof(float) * array_length));
-    CubDebugExit(cudaMemcpy(d_in, h_in, sizeof(float) * array_length, cudaMemcpyHostToDevice));
+    g_allocator.DeviceAllocate((void**)& d_in, sizeof(float) * array_length);
+    cudaMemcpy(d_in, h_in, sizeof(float) * array_length, cudaMemcpyHostToDevice);
 
-    int* d_sum = NULL;
-    CubDebugExit(g_allocator.DeviceAllocate((void**)& d_sum, sizeof(float) * 1));
+    float* d_sum = NULL;
+    g_allocator.DeviceAllocate((void**)& d_sum, sizeof(float) * 1);
 
     void* d_temp_storage = NULL;
     size_t temp_storage_bytes = 0;
-    CubDebugExit(DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, d_in, d_sum, array_length));
-    CubDebugExit(g_allocator.DeviceAllocate(&d_temp_storage, temp_storage_bytes));
+    DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, d_in, d_sum, array_length);
+    g_allocator.DeviceAllocate(&d_temp_storage, temp_storage_bytes);
 
     float ms;
 
@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start);
     cudaDeviceSynchronize();
 
-    CubDebugExit(DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, d_in, d_sum, num_items));
+    DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, d_in, d_sum, array_length);
 
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
@@ -60,15 +60,15 @@ int main(int argc, char* argv[]) {
     cudaEventElapsedTime(&ms, start, stop);
     cudaDeviceSynchronize();
 
-    int gpu_sum;
-    CubDebugExit(cudaMemcpy(&gpu_sum, d_sum, sizeof(float) * 1, cudaMemcpyDeviceToHost));
+    float gpu_sum;
+    cudaMemcpy(&gpu_sum, d_sum, sizeof(float) * 1, cudaMemcpyDeviceToHost);
 
-    std::cout << ms  << std::endl;
     std::cout << gpu_sum << std::endl;
+    std::cout << ms  << std::endl;
 
-    if (d_in) CubDebugExit(g_allocator.DeviceFree(d_in));
-    if (d_sum) CubDebugExit(g_allocator.DeviceFree(d_sum));
-    if (d_temp_storage) CubDebugExit(g_allocator.DeviceFree(d_temp_storage));
+    if (d_in) g_allocator.DeviceFree(d_in);
+    if (d_sum) g_allocator.DeviceFree(d_sum);
+    if (d_temp_storage) g_allocator.DeviceFree(d_temp_storage);
     
     return 0;
 }
