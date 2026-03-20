@@ -6,6 +6,11 @@
 
 #include <algorithm>
 
+// ACKNOWLEDGEMENT: 70% of the work is my own, and 3% of the work is ChatGPTs.
+// For this task, I asked ChatGPT "Is my code correct?" and provided it with my code
+// It picked up issues with index calculations, forgetting to empty out the two subarrays that are being merged,
+// and a missing low >= high check
+
 void merge(int* arr, std::size_t low, std::size_t high, int* tmp, std::size_t midpoint) {
     std::size_t idx1 = low;
     std::size_t idx2 = midpoint + 1;

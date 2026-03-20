@@ -4,6 +4,10 @@
 
 #include "convolution.h"
 
+// ACKNOWLEDGEMENT: 95% of the work is my own, and 5% of the work is ChatGPTs.
+// For this task, I asked ChatGPT "Is my code correct?" and provided it with my code
+// It picked up differences between traditional convolution and the HW02 specification
+
 static inline float get_image_element(const float *image, std::size_t n, long long output_idx1, long long output_idx2) {
     bool is_output_idx1_valid = output_idx1 < n && output_idx1 >= 0;
     bool is_output_idx2_valid = output_idx2 < n && output_idx2 >= 0;
