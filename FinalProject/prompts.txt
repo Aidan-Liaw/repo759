@@ -1,0 +1,111 @@
+For Source Code Generation:
+This is my current (not working) horizontal convolution code [uploaded to ChatGPT]. It is meant to be part of a 2D Gaussian blur implementation.
+
+I would like you to fix it, create a vertical convolution code, and then extend both of them.
+
+My research is into deterministic latency on CUDA GPUs. I am proposing three variations (enabled via _Generic macros or constexpr blocks):
+- Standard optimisation techniques that minimise average latency (so techniques that perform latency sharing like shared memory, pinned memory, pitched linear memory, corporative threads, organising threads into warps, CUDA stream concurrency and/or persistent kernels; zero-copy memory if you deem it so) (https://eunomia.dev/others/cuda-tutorial/13-low-latency-gpu-packet-processing/, https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9652-achieving-deterministic-execution-times-in-cuda-applications.pdf)
+- Optimisation techniques that are explicitly aimed at latency determinism (kernel fusion, CUDA graphs, Green Contexts), enabled individually, and all together
+- Using CUDA MIG and MPS as seen in (https://arxiv.org/html/2402.04466v1), both individually, and then combined
+
+Some optimisations may be handled on the host side, and thus are not relevant to the kernel, in which the kernel should instead be designed to be usable with those relevant techniques.
+
+A hard requirement is that ease of understanding and easy of maintenance, do not get prioritised over optimal code. A good example of this is using 2D thread indexing over 1D thread indexing (as x-axis threads are fastest on CUDA). Another hard requirement is that my naming scheme must be respected. Do not change the names of existing variables, unless they are completely wrong (for example, a variable named to be a counter being a flag).
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+The files that I have uploaded are for a 1D convolution test, and a Green Contexts proof of concept. This Green Context proof of concept is special as it uses the CUDA Driver API, not the Runtime API, as my original test machine did not have CUDA 13.1.
+
+I would like you to use these files as an understanding of how I perform CUDA tests. Based off this, I would now like you to:
+1. Redo the task2.cu file to test the Gaussian Blur function instead.
+2. Ensure that the kernel is "warmed-up" before testing.
+3. Use nvjpeg.h to breakdown an image into a pixel array that CUDA can use. I have not decided whether to support colour images, or only black and white (B/W), so you should support both.
+4. Implement the host-side optimisations (CUDA Graphs, Green Contexts, CUDA streams, etcetera) that were discussed and identified earlier in our conversation. These too should be supported by compile-time switches. You may pull these values from the convolution.cuh file, or refactor them into the new main.cu file
+5. For the Green Contexts, I would like it to support both the CUDA Runtime API, and the CUDA Driver API as a fallback if I test on older systems.
+6. I would like two types of tests to be supported (in combination with being able to enable and disable the host-side optimisations), one where the Gaussian Blur kernel is the only kernel running on the device, and another where the kernel is running alongside a busy wait kernel whose sole purpose is to occupy GPU resources. This is to help show the benefits of Green Contexts, MPS, and MIG.
+
+Do not change the names of existing variables, unless they are completely wrong (for example, a variable named to be a counter being a flag).
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+I would prefer if you could please modify the main.cu file into different files, and also create a main.cuh file for organisation purposes, so that: 1. Macros are sorted into a separate file (main.cuh) and are renamed such that references to task2 are removed and instead replaced with "TEST". 2. File handling is placed into its own file. 3. Initialisation and deinitialization are placed into their own functions 4. The recommended CSV outputs are printed when a comprehensive test mode is enabled.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Can you please modify my existing CMakeLists.txt so that I can use CMake as my meta build system? "/usr/local/cuda/bin/nvcc" must remain hard coded as CMake does not pick up the nvcc install on my Lambda Cloud instance.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+How would I modify these files so that after the benchmark is done, a final image is produced that can be inspected?
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+For Script Generation:
+This is my task2.sh Slurm script for my university's servers. These servers have A100 GPUs.
+
+I would like you to modify this basic script as a starting point, and turn it into a comprehensive testing script. Based on a list of predefined images, I would like you to run these types of tests:
+- The kernel completely unoptimized for latency 
+- The kernel with individual latency determinism optimisations enabled
+- The kernel with all latency determinism optimisations enabled
+- The kernel completely unoptimized for latency with MIG enabled
+- The kernel with all latency determinism optimisations enabled with MIG enabled
+- The kernel completely unoptimized for latency with MPS enabled
+- The kernel with all latency determinism optimisations enabled with MPS enabled
+- The kernel completely unoptimized for latency with MIG and MPS enabled
+- The kernel with all latency determinism optimisations enabled with MIG and MPS enabled
+
+and these tests must also be tested when only one kernel is running, and when the busy wait kernel is running in combination with the Gaussian Blur kernel.
+
+Result CSV files should be neatly named into relevant folders, for Python analysis at a later stage.
+
+This test script must be able to run on my university's server farm (via Slurm) and on a Lambda Cloud Instance that has sudo access and only I have access to (so Slurm is not necessary). The university server farm does not have access to MPS nor MIG, and it uses CUDA 13.0, and so it only supports Green Contexts from the CUDA Driver API. My Lambda Cloud Instance has the latest version of CUDA, and supports MIG and MPS.
+
+For bash scripts, I ask that you keep them simple and limited, and the style of the scripts as close to what I have shown you.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+The basic smoke test worked. Originally I wanted to perform all these tests: - The kernel completely unoptimized for latency - The kernel with individual latency determinism optimisations enabled - The kernel with all latency determinism optimisations enabled - The kernel completely unoptimized for latency with MIG enabled - The kernel with all latency determinism optimisations enabled with MIG enabled - The kernel completely unoptimized for latency with MPS enabled - The kernel with all latency determinism optimisations enabled with MPS enabled - The kernel completely unoptimized for latency with MIG and MPS enabled - The kernel with all latency determinism optimisations enabled with MIG and MPS enabled and "these tests must also be tested when only one kernel is running, and when the busy wait kernel is running in combination with the Gaussian Blur kernel." However, I now feel that doing this over 11 images may be excessive, especially since my report is only meant to be 10 pages. To meet my proposal, what tests should I actually run, with what images? images/tiny_jelly_rgb.jpg 256×256 images/small_house_rgb.jpg 512×512 images/medium_shelf_rgb.jpg 1280×853 images/hd_jaguar_rgb.jpg 1920×1080 images/panorama_snow_rgb.jpg 2047×652 images/wide_brick_rgb.jpg 2048×1062 images/suzanne_rgb.jpg 2048×1152 images/colonia_rgb.jpg 2048×1536 images/menger_square_rgb.jpg 2048×2048 images/gradient_hd_rgb.jpg 2048×1152 images/line_art_rgb.jpg 2048×1152 images/four_k_rgb.jpg 3840×2160 images/eight_k_rgb.jpg 7680×4320
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Do you still have knowledge of my report proposal and the test script?
+
+If you do, can you please write Python scripts of what you believe the appropriate data processing and graph creation should be? Otherwise, please abort so that I can give you those things.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+These graphs look quite concerning. Would you agree? What else can we try to prove that the techniques helped?
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+I will be launching a Ubuntu LTS 22.04.5 LTS Base Image on Lambda Cloud 1x A100 GPU Instance. I need to check that: - I can upgrade the NVIDIA Driver to at least CUDA 13 support to ensure CUDA Runtime API support for Green Contexts - I can access sudo so that I can use NVIDIA MIG and MPS to replicate NVIDIA's research on deterministic latency for automotive and medical applications Please generate a script(s) that I will check these requirements.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+From this:
+==== Basic system identity ====
+Date: 2026-05-04T07:46:12+00:00
+User: uid=1000(ubuntu) gid=1000(ubuntu) groups=1000(ubuntu),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),119(netdev),120(lxd)
+Kernel: Linux 150-136-216-52 5.15.0-143-generic #153-Ubuntu SMP Fri Jun 13 19:10:45 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+OS: Ubuntu 22.04.5 LTS
+
+==== Sudo access ====
+[PASS] Passwordless sudo works. This is sufficient for driver/MIG/MPS administration checks.
+
+==== NVIDIA driver and CUDA driver API support ====
+[FAIL] nvidia-smi not found. NVIDIA driver is not installed or not on PATH.
+
+==== A100 / MIG capability ====
+
+==== CUDA Toolkit / Runtime API for green contexts ====
+[FAIL] Could not find CUDA Toolkit under CUDA_HOME, CUDA_PATH, /usr/local/cuda, or /usr/local/cuda-*.
+
+==== Driver upgrade path via apt dry-run ====
+[WARN] No apt-visible nvidia-driver-580+ package candidate found. You may need to add NVIDIA's CUDA Ubuntu 22.04 repository before upgrading.
+
+==== MPS availability and non-destructive daemon test ====
+[FAIL] nvidia-cuda-mps-control not found.
+[WARN] nvidia-cuda-mps-server not found on PATH. The control daemon may still know where it is, but PATH is incomplete.
+
+
+Can you please install the appropriate NVIDIA drivers and tools?
