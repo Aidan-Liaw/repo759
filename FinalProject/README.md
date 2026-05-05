@@ -1,4 +1,4 @@
-# Gaussian blur CUDA latency benchmark
+# Gaussian blur CUDA latency benchmark (AI GENERATED)
 
 This package replaces the original `task2.cu` 1D convolution test with a JPEG-backed Gaussian blur latency benchmark.
 
